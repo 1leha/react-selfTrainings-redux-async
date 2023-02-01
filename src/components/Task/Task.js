@@ -1,7 +1,7 @@
 import { MdClose } from 'react-icons/md';
 import { useDispatch } from 'react-redux';
 import css from './Task.module.css';
-import { toggleCompleted, toggleDelete } from '../../redux/actions';
+import { toggleCompleted, toggleDelete } from '../../redux/tasksSlice';
 
 export const Task = ({ task }) => {
   const dispatch = useDispatch();
