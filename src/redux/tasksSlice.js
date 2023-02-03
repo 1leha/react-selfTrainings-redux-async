@@ -7,6 +7,15 @@ import {
   deleteTask,
 } from './operations';
 
+const handlerPending = state => {
+  state.isLoading = true;
+};
+
+const handlerRejected = (state, { payload }) => {
+  state.isLoading = false;
+  state.error = payload;
+};
+
 export const tasksSlice = createSlice({
   name: 'tasks',
   initialState: {
@@ -20,64 +29,45 @@ export const tasksSlice = createSlice({
   //* with createAsyncThunk
   //*
   //*------------------------------
-  extraReducers: {
-    // fetch tasks Reducers
-    [fetchTasks.pending]: state => {
-      state.isLoading = true;
-    },
-    [fetchTasks.fulfilled]: (state, { payload }) => {
-      state.isLoading = false;
-      state.error = null;
-      state.data = payload;
-    },
-    [fetchTasks.rejected]: (state, { payload }) => {
-      state.isLoading = false;
-      state.error = payload;
-    },
+  extraReducers: builder => {
+    builder
+      // fetch tasks Reducers
+      .addCase(fetchTasks.pending, handlerPending)
+      .addCase(fetchTasks.fulfilled, (state, { payload }) => {
+        state.isLoading = false;
+        state.error = null;
+        state.data = payload;
+      })
+      .addCase(fetchTasks.rejected, handlerRejected)
 
-    // add Tasks To Server Reducers
-    [addTasksToServer.pending]: state => {
-      state.isLoading = true;
-    },
-    [addTasksToServer.fulfilled]: (state, { payload }) => {
-      state.isLoading = false;
-      state.error = null;
-      state.data.push(payload);
-    },
-    [addTasksToServer.rejected]: (state, { payload }) => {
-      state.isLoading = false;
-      state.error = payload;
-    },
+      // add Tasks To Server Reducers
+      .addCase(addTasksToServer.pending, handlerPending)
+      .addCase(addTasksToServer.fulfilled, (state, { payload }) => {
+        state.isLoading = false;
+        state.error = null;
+        state.data.push(payload);
+      })
+      .addCase(addTasksToServer.rejected, handlerRejected)
 
-    // add toggleCompleted Reducers
-    [toggleTask.pending]: state => {
-      state.isLoading = true;
-    },
-    [toggleTask.fulfilled]: (state, { payload }) => {
-      state.isLoading = false;
-      state.error = null;
-      const idx = state.data.findIndex(task => task.id === payload.id);
-      state.data.splice(idx, 1, payload);
-    },
-    [toggleTask.rejected]: (state, { payload }) => {
-      state.isLoading = false;
-      state.error = payload;
-    },
+      // add toggleCompleted Reducers
+      .addCase(toggleTask.pending, handlerPending)
+      .addCase(toggleTask.fulfilled, (state, { payload }) => {
+        state.isLoading = false;
+        state.error = null;
+        const idx = state.data.findIndex(task => task.id === payload.id);
+        state.data.splice(idx, 1, payload);
+      })
+      .addCase(toggleTask.rejected)
 
-    // add toggleCompleted Reducers
-    [deleteTask.pending]: state => {
-      state.isLoading = true;
-    },
-    [deleteTask.fulfilled]: (state, { payload }) => {
-      state.isLoading = false;
-      state.error = null;
-      const idx = state.data.findIndex(task => task.id === payload);
-      state.data.splice(idx, 1);
-    },
-    [deleteTask.rejected]: (state, { payload }) => {
-      state.isLoading = false;
-      state.error = payload;
-    },
+      // add toggleCompleted Reducers
+      .addCase(deleteTask.pending, handlerPending)
+      .addCase(deleteTask.fulfilled, (state, { payload }) => {
+        state.isLoading = false;
+        state.error = null;
+        const idx = state.data.findIndex(task => task.id === payload);
+        state.data.splice(idx, 1);
+      })
+      .addCase(deleteTask.rejected, handlerRejected);
   },
 });
 
