@@ -2,11 +2,11 @@ import { Task } from 'components/Task/Task';
 import { useSelector } from 'react-redux';
 import css from './TaskList.module.css';
 import { filterStatus } from '../../redux/constants';
-import { getTasks, getGetFilterStatus } from '../../redux/selectors';
+import { getTasks, getFilterStatus } from '../../redux/selectors';
 
 export const TaskList = () => {
-  const tasks = useSelector(getTasks);
-  const filter = useSelector(getGetFilterStatus);
+  const { data } = useSelector(getTasks);
+  const filter = useSelector(getFilterStatus);
 
   const getSelectedTasks = (tasks, filter) => {
     switch (filter) {
@@ -20,7 +20,7 @@ export const TaskList = () => {
     }
   };
 
-  const renderTasks = getSelectedTasks(tasks, filter);
+  const renderTasks = getSelectedTasks(data, filter);
 
   return (
     <ul className={css.list}>

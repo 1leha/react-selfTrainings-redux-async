@@ -3,12 +3,12 @@ import css from './StatusFilter.module.css';
 
 import { filterStatus } from '../../redux/constants';
 import { useDispatch, useSelector } from 'react-redux';
-import { getGetFilterStatus } from '../../redux/selectors';
+import { getFilterStatus } from '../../redux/selectors';
 import { changeFilter } from '../../redux/filtersSlice';
 
 export const StatusFilter = () => {
   // Беру из стора стейт для фильтров
-  const filter = useSelector(getGetFilterStatus);
+  const filter = useSelector(getFilterStatus);
   const dispatch = useDispatch();
   const handlerChangeFilter = filter => dispatch(changeFilter(filter));
 

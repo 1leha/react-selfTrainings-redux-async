@@ -1,4 +1,4 @@
-export const initTasksState = [
+export const initTasks = [
   { id: 1, text: 'HTML', completed: true },
   { id: 2, text: 'CSS', completed: true },
   { id: 3, text: 'JS', completed: true },
