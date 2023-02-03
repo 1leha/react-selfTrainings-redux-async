@@ -10,7 +10,7 @@ import { getTasks } from 'redux/selectors';
 
 export const App = () => {
   const dispatch = useDispatch();
-  // const { isLoading, error } = useSelector(getTasks);
+  const { isLoading, error } = useSelector(getTasks);
 
   useEffect(() => {
     dispatch(fetchTasks());
@@ -20,8 +20,7 @@ export const App = () => {
     <Layout>
       <AppBar />
       <TaskForm />
-      {/* {isLoading && <div>Loading ...</div>} */}
-      {/* {!isLoading && !error && <TaskList />} */}
+      {isLoading && !error && <div>Loading ...</div>}
       <TaskList />
     </Layout>
   );

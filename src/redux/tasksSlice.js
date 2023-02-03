@@ -1,7 +1,11 @@
-import { initTasks } from './initTasksState';
-
 import { createSlice } from '@reduxjs/toolkit';
-import { nanoid } from 'nanoid';
+
+import {
+  fetchTasks,
+  addTasksToServer,
+  toggleTask,
+  deleteTask,
+} from './operations';
 
 export const tasksSlice = createSlice({
   name: 'tasks',
@@ -11,109 +15,70 @@ export const tasksSlice = createSlice({
     error: null,
   },
 
-  reducers: {
-    addTask: {
-      reducer(state, action) {
-        return [...state, action.payload];
-      },
-      prepare(text) {
-        return {
-          payload: { id: nanoid(), text, completed: false },
-        };
-      },
-    },
-
-    // toggleCompleted(state, action) {
-    //   return state.map(task => {
-    //     if (task.id !== action.payload) return task;
-
-    //     return { ...task, completed: !task.completed };
-    //   });
-    // },
-
-    toggleDelete(state, action) {
-      return state.filter(task => task.id !== action.payload);
-    },
-
+  //*------------------------------
+  //*
+  //* with createAsyncThunk
+  //*
+  //*------------------------------
+  extraReducers: {
     // fetch tasks Reducers
-    fetchTasksPending(state) {
+    [fetchTasks.pending]: state => {
       state.isLoading = true;
     },
-    fetchTasksSuccess(state, action) {
+    [fetchTasks.fulfilled]: (state, { payload }) => {
       state.isLoading = false;
       state.error = null;
-      state.data = action.payload;
+      state.data = payload;
     },
-    fetchTasksReject(state, action) {
+    [fetchTasks.rejected]: (state, { payload }) => {
       state.isLoading = false;
-      state.error = action.payload;
+      state.error = payload;
     },
 
     // add Tasks To Server Reducers
-    addTaskPending(state) {
+    [addTasksToServer.pending]: state => {
       state.isLoading = true;
     },
-    addTaskSuccess(state, action) {
+    [addTasksToServer.fulfilled]: (state, { payload }) => {
       state.isLoading = false;
       state.error = null;
-      state.data.push(action.payload);
+      state.data.push(payload);
     },
-    addTaskReject(state, action) {
+    [addTasksToServer.rejected]: (state, { payload }) => {
       state.isLoading = false;
-      state.error = action.payload;
+      state.error = payload;
     },
 
     // add toggleCompleted Reducers
-    toggleTaskPending(state) {
+    [toggleTask.pending]: state => {
       state.isLoading = true;
     },
-    toggleTaskSuccess(state, action) {
-      return {
-        ...state,
-        data: state.data.map(task => {
-          if (task.id !== action.payload) return task;
-          return { ...task, completed: !task.completed };
-        }),
-      };
-    },
-    toggleTaskReject(state, action) {
+    [toggleTask.fulfilled]: (state, { payload }) => {
       state.isLoading = false;
-      state.error = action.payload;
+      state.error = null;
+      const idx = state.data.findIndex(task => task.id === payload.id);
+      state.data.splice(idx, 1, payload);
+    },
+    [toggleTask.rejected]: (state, { payload }) => {
+      state.isLoading = false;
+      state.error = payload;
     },
 
-    // add deleteTask Reducers
-    deleteTaskPending(state) {
+    // add toggleCompleted Reducers
+    [deleteTask.pending]: state => {
       state.isLoading = true;
     },
-    deleteTaskSuccess(state, action) {
-      return {
-        ...state,
-        data: state.data.filter(task => task.id !== action.payload),
-      };
-    },
-    deleteTaskReject(state, action) {
+    [deleteTask.fulfilled]: (state, { payload }) => {
       state.isLoading = false;
-      state.error = action.payload;
+      state.error = null;
+      const idx = state.data.findIndex(task => task.id === payload);
+      state.data.splice(idx, 1);
+    },
+    [deleteTask.rejected]: (state, { payload }) => {
+      state.isLoading = false;
+      state.error = payload;
     },
   },
 });
-
-export const {
-  addTask,
-  toggleCompleted,
-  toggleDelete,
-  fetchTasksPending,
-  fetchTasksSuccess,
-  fetchTasksReject,
-  addTaskPending,
-  addTaskSuccess,
-  addTaskReject,
-  toggleTaskPending,
-  toggleTaskSuccess,
-  toggleTaskReject,
-  deleteTaskPending,
-  deleteTaskSuccess,
-  deleteTaskReject,
-} = tasksSlice.actions;
 
 export const tasksReducer = tasksSlice.reducer;
